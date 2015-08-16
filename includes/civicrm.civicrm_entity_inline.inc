@@ -68,12 +68,13 @@ class CivicrmInlineEntityFormController extends EntityInlineEntityFormController
      if($op == 'edit')
      {
       foreach($form_state['inline_entity_form'][$ief_id]['entities'] as $k => $entity_array) {
-        $entity = $entity_array['entity'];
-        foreach ($form_state['values'][$field_name]['und']['entities'][$k]['form'] as $key => $value) {
-          $entity->{$key} = $value;
-          
+        if(isset($form_state['values'][$field_name]['und']['entities'][$k]['form'])){
+          $entity = $entity_array['entity'];
+          foreach ($form_state['values'][$field_name]['und']['entities'][$k]['form'] as $key => $value) {
+            $entity->{$key} = $value;
+          }
+          field_attach_form_validate($entity_type, $entity, $entity_form, $form_state);
         }
-        field_attach_form_validate($entity_type, $entity, $entity_form, $form_state);
       }
     }
     if($op == 'create') {
@@ -96,21 +97,20 @@ class CivicrmInlineEntityFormController extends EntityInlineEntityFormController
     if($op == 'edit')
      {
       foreach($form_state['inline_entity_form'][$ief_id]['entities'] as $k => $entity_array) {
-        $entity = $entity_array['entity'];
-        foreach ($form_state['values'][$field_name]['und']['entities'][$k]['form'] as $key => $value) {
-          $entity->{$key} = $value;
-          
-        }
-        if ($entity->is_new = isset($entity->is_new) ? $entity->is_new : 0) {
-          $entity->created = time();
-        }
-        $entity->changed = time();
+        if(isset($form_state['values'][$field_name]['und']['entities'][$k]['form'])) {
+          $entity = $entity_array['entity'];
+          foreach ($form_state['values'][$field_name]['und']['entities'][$k]['form'] as $key => $value) {
+            $entity->{$key} = $value;
+          }
+          if ($entity->is_new = isset($entity->is_new) ? $entity->is_new : 0) {
+            $entity->created = time();
+          }
+          $entity->changed = time();
         
-        $wrapper = entity_metadata_wrapper($entity_type, $entity);
-        field_attach_submit($entity_type, $entity, $entity_form, $form_state);
-        //$entity->save();
-        //dsm($entity);
-        $wrapper->save();
+          $wrapper = entity_metadata_wrapper($entity_type, $entity);
+          field_attach_submit($entity_type, $entity, $entity_form, $form_state);
+          $wrapper->save();
+        }
       }
     }
     
